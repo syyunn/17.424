@@ -14,7 +14,7 @@ def extract_text_from_pdf(filepath):
             text += page.extract_text()
         return text
 
-filepath = 'week2/Rogowski 1987.pdf'
+filepath = 'clemente.pdf'
 
 maxlen = 4097
 
@@ -34,7 +34,7 @@ def make_documents(chunks, sources):
         Documents.append(Document(page_content=chunk, metadata={"source": source}))
     return Documents
 
-sources = [f'Rogowski 1987 {i}' for i in range(len(chunks))]
+sources = [f'{filepath} 1987 Chunk {i}' for i in range(len(chunks))]
 Documents = make_documents(chunks, sources)
 
 import dotenv
@@ -44,15 +44,32 @@ openai_apikey = os.getenv("OPENAI_API_KEY")
 
 chain = load_qa_with_sources_chain(OpenAI(temperature=0, api_key=openai_apikey))
 
-def print_answer(question):
-    print(
+def print_answer(question, documents, show_locator=False, show_question=False):
+    if show_question:
+        print(question)
+    if show_locator:
+        print(
         chain(
             {
-                "input_documents": [Documents[0]],
+                "input_documents": documents,
                 "question": question,
             },
             return_only_outputs=True,
         )["output_text"]
-    )
+        )
+    else:
+        res = chain(
+                {
+                    "input_documents": documents,
+                    "question": question,
+                },
+                return_only_outputs=True,
+            )["output_text"]
+        print(res[:-30])
 
-print_answer("What is The Stolper-Samuelson Theorem explained in this paper?")
+## For full summary
+# for doc in Documents:
+#     print_answer("Summarize this section without starting your sentence \'this section ... \'", [doc], show_locator=True, show_question=False)
+
+## For specific section
+print_answer("What is the meaning of environmental crackdown in this paper?", [Documents[1]])
