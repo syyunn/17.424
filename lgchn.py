@@ -13,8 +13,13 @@ def extract_text_from_pdf(filepath):
             page = reader.pages[page_number]
             text += page.extract_text()
         return text
-
-filepath = 'clemente.pdf'
+    
+# filepath = './week2/AhAhlquist, Clayton and Levi 2014.pdf'
+# filepath = './week2/Hiscox 2002.pdf'
+# filepath = './week2/Mansfield and Mutz 2009.pdf'
+# filepath = './week2/Osgood_Ro 2022.pdf'
+# filepath = './week2/Rogowski 1987.pdf'
+filepath = './week2/Scheve Slaughter 2001.pdf'
 
 maxlen = 4097
 
@@ -34,7 +39,7 @@ def make_documents(chunks, sources):
         Documents.append(Document(page_content=chunk, metadata={"source": source}))
     return Documents
 
-sources = [f'{filepath} 1987 Chunk {i}' for i in range(len(chunks))]
+sources = [f'{filepath} Chunk {i}' for i in range(len(chunks))]
 Documents = make_documents(chunks, sources)
 
 import dotenv
@@ -57,6 +62,8 @@ def print_answer(question, documents, show_locator=False, show_question=False):
             return_only_outputs=True,
         )["output_text"]
         )
+        print('\n')
+        pass
     else:
         res = chain(
                 {
@@ -66,10 +73,18 @@ def print_answer(question, documents, show_locator=False, show_question=False):
                 return_only_outputs=True,
             )["output_text"]
         print(res[:-30])
+        print('\n')
+        pass
+    pass
 
-## For full summary
+# For full summary
 # for doc in Documents:
-#     print_answer("Summarize this section without starting your sentence \'this section ... \'", [doc], show_locator=True, show_question=False)
+#     print_answer("Summarize this section without starting your answer \'this section or this paper [verb]...\'. In addition, Include the main findings of the author as well.", [doc], show_locator=True, show_question=False)
 
-## For specific section
-print_answer("What is the meaning of environmental crackdown in this paper?", [Documents[1]])
+# For specific section
+for doc in Documents[11:]:
+    print_answer("Summarize this section without starting your answer \'this section [verb]...\'. Include the main findings of the author as well.", [doc], show_locator=True, show_question=False)
+
+# For specific section
+# print_answer("Why does author ?", [Documents[1]])
+pass
